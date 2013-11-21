@@ -1,3 +1,11 @@
+/*
+ * Associative Array
+ * Version 1.0.0
+ * Written by: Anderson Grüdtner Martins
+ *
+ * License: GNU General Public License, version 2.0 (GPLv2) - http://opensource.org/licenses/GPL-2.0
+ */
+
 ;(function(window, undefined) {
 
 	function AssociativeArray(list) {

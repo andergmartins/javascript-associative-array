@@ -15,14 +15,14 @@
 		this.hasLists = list === true;
 
 		// Add initial items from object
-		if (typeof list === 'object' && list.items) {
+		if ((typeof list === 'object') && list.items) {
 			this.hasLists = list.hasLists;
 
 			for (var key in list.items) {
 				this.add(key, list.items[key]);
 			}
 		}
-		else if (typeof list === 'array') {
+		else if (list instanceof Array) {
 			this.hasLists = true;
 
 			var length = list.length;
@@ -83,6 +83,8 @@
 		},
 
 		count: function() {
+			var key;
+
 			this.length = 0;
 
 			for (key in this.items) {

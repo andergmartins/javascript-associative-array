@@ -6,147 +6,152 @@
  * License: GNU General Public License, version 2.0 (GPLv2) - http://opensource.org/licenses/GPL-2.0
  */
 
-;(function(window, undefined) {
+;(function (window, undefined) {
 
-	function AssociativeArray(list) {
-		this.length = 0;
-		this.items = {};
+    function AssociativeArray(list) {
+        var key, length, i;
 
-		this.hasLists = list === true;
+        this.length = 0;
+        this.items = {};
 
-		// Add initial items from object
-		if ((typeof list === 'object') && list.items) {
-			this.hasLists = list.hasLists;
+        this.hasLists = list === true;
 
-			for (var key in list.items) {
-				this.add(key, list.items[key]);
-			}
-		}
-		else if (list instanceof Array) {
-			this.hasLists = true;
+        // Add initial items from object
+        if ((typeof list === 'object') && list.items) {
+            this.hasLists = list.hasLists;
 
-			var length = list.length;
-			for (var i = 0; i < length; i++) {
-				this.add(i, list[i]);
-			}
-		}
-	}
+            for (key in list.items) {
+                if (list.items.hasOwnProperty(key)) {
+                    this.add(key, list.items[key]);
+                }
+            }
+        } else if (list instanceof Array) {
+            this.hasLists = true;
 
-	AssociativeArray.prototype = {
-		add: function(key, item, replaceSubitem) {
-			if (this.hasLists) {
-				// Check if the key already exists
-				if (this.hasKey(key)) {
-					var list = this.get(key);
+            length = list.length;
+            for (i = 0; i < length; i++) {
+                this.add(i, list[i]);
+            }
+        }
+    }
 
-					if (replaceSubitem === true) {
-						var total = list.length,
-							subitem = null;
+    AssociativeArray.prototype = {
+        add: function (key, item, replaceSubitem) {
+            var list, total, i, subitem;
 
-						for (var i = 0; i < total; i++) {
-							subitem = list[i];
+            if (this.hasLists) {
+                // Check if the key already exists
+                if (this.hasKey(key)) {
+                    list = this.get(key);
 
-							if (subitem == item) {
-								list[i] = item;
-							}
-						}
-					}
-					else {
-						list.push(item);
-					}
+                    if (replaceSubitem === true) {
+                        total = list.length;
+                        subitem = null;
 
-					this.items[key] = list;
-				}
-				else {
-					this.items[key] = [item];
-				}
-			}
-			else {
-				this.items[key] = item;
-			}
+                        for (i = 0; i < total; i++) {
+                            subitem = list[i];
 
-			this.count();
+                            if (subitem == item) {
+                                list[i] = item;
+                            }
+                        }
+                    } else {
+                        list.push(item);
+                    }
 
-			return item;
-		},
+                    this.items[key] = list;
+                } else {
+                    this.items[key] = [item];
+                }
+            } else {
+                this.items[key] = item;
+            }
 
-		get: function(key) {
-			if (this.items.hasOwnProperty(key)) {
-				return this.items[key];
-			}
+            this.count();
 
-			return null;
-		},
+            return item;
+        },
 
-		hasKey: function(key) {
-			return this.items.hasOwnProperty(key);
-		},
+        get: function (key) {
+            if (this.items.hasOwnProperty(key)) {
+                return this.items[key];
+            }
 
-		count: function() {
-			var key;
+            return null;
+        },
 
-			this.length = 0;
+        hasKey: function (key) {
+            return this.items.hasOwnProperty(key);
+        },
 
-			for (key in this.items) {
-				if (this.items.hasOwnProperty(key)) {
-					this.length++;
-				}
-			}
-		},
+        count: function () {
+            var key;
 
-		remove: function(key) {
-			if (this.items.hasOwnProperty(key)) {
-				this.items[key] = null;
-				delete this.items[key];
+            this.length = 0;
 
-				this.count();
-			}
-		},
+            for (key in this.items) {
+                if (this.items.hasOwnProperty(key)) {
+                    this.length++;
+                }
+            }
+        },
 
-		removeFromListByIndex: function(key, index) {
-			if (this.items.hasOwnProperty(key)) {
+        remove: function (key) {
+            if (this.items.hasOwnProperty(key)) {
+                this.items[key] = null;
+                delete this.items[key];
 
-				if (index >= 0 && this.hasLists) {
-					var list = this.get(key);
-					list.splice(index, 1);
-				}
-			}
-		},
+                this.count();
+            }
+        },
 
-		removeFromListByValue: function(key, value) {
-			if (this.items.hasOwnProperty(key)) {
+        removeFromListByIndex: function (key, index) {
+            var list;
 
-				if (this.hasLists) {
-					var list = this.get(key),
-						length, i;
+            if (this.items.hasOwnProperty(key)) {
 
-					length = list.length;
-					for (i = 0; i < length; i++) {
-						if (list[i] === value) {
-							list.splice(i, 1);
-							break;
-						}
-					}
-				}
-			}
-		},
+                if (index >= 0 && this.hasLists) {
+                    list = this.get(key);
+                    list.splice(index, 1);
+                }
+            }
+        },
 
-		clean: function() {
-			this.items = {};
-			this.length = 0;
-		},
+        removeFromListByValue: function (key, value) {
+            var list, length, i;
 
-		each: function(callback) {
-			var key;
+            if (this.items.hasOwnProperty(key)) {
 
-			for (key in this.items) {
-				if (this.items.hasOwnProperty(key)) {
-					callback.call(this.items[key], this.items[key], key);
-				}
-			}
-		}
-	};
+                if (this.hasLists) {
+                    list = this.get(key);
 
-	window.AssociativeArray = AssociativeArray;
+                    length = list.length;
+                    for (i = 0; i < length; i++) {
+                        if (list[i] === value) {
+                            list.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+
+        clean: function () {
+            this.items = {};
+            this.length = 0;
+        },
+
+        each: function (callback) {
+            var key;
+
+            for (key in this.items) {
+                if (this.items.hasOwnProperty(key)) {
+                    callback.call(this.items[key], this.items[key], key);
+                }
+            }
+        }
+    };
+
+    window.AssociativeArray = AssociativeArray;
 
 })(window);
